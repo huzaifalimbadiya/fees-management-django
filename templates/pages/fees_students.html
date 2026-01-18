@@ -1,0 +1,245 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    .page-container {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        padding: 40px 20px;
+    }
+
+    .content-wrapper {
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .page-header {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 30px;
+        border-radius: 16px;
+        margin-bottom: 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .header-title {
+        color: #ffffff;
+        font-size: 28px;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .back-btn {
+        padding: 10px 24px;
+        background: rgba(255, 255, 255, 0.1);
+        color: #ffffff;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+
+    .back-btn:hover {
+        background: rgba(255, 255, 255, 0.15);
+        transform: translateY(-2px);
+    }
+
+    .table-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        overflow: hidden;
+    }
+
+    .table-wrapper {
+        overflow-x: auto;
+    }
+
+    .students-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .students-table thead {
+        background: rgba(255, 255, 255, 0.08);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .students-table th {
+        padding: 18px 24px;
+        text-align: left;
+        color: #94a3b8;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .students-table tbody tr {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        transition: all 0.3s ease;
+    }
+
+    .students-table tbody tr:hover {
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .students-table tbody tr:last-child {
+        border-bottom: none;
+    }
+
+    .students-table td {
+        padding: 20px 24px;
+        color: #e2e8f0;
+        font-size: 15px;
+    }
+
+    .student-name {
+        font-weight: 600;
+        color: #ffffff;
+    }
+
+    .action-btn {
+        padding: 10px 20px;
+        background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .action-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(139, 92, 246, 0.4);
+    }
+
+    .empty-state {
+        padding: 60px 20px;
+        text-align: center;
+    }
+
+    .empty-icon {
+        font-size: 64px;
+        margin-bottom: 16px;
+        opacity: 0.3;
+    }
+
+    .empty-title {
+        color: #94a3b8;
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+
+    .empty-text {
+        color: #64748b;
+        font-size: 14px;
+    }
+
+    @media (max-width: 768px) {
+        .page-container {
+            padding: 20px 15px;
+        }
+
+        .page-header {
+            padding: 20px;
+            flex-direction: column;
+            gap: 16px;
+            align-items: flex-start;
+        }
+
+        .header-title {
+            font-size: 22px;
+        }
+
+        .back-btn {
+            width: 100%;
+            text-align: center;
+        }
+
+        .students-table th,
+        .students-table td {
+            padding: 12px 16px;
+            font-size: 14px;
+        }
+
+        .students-table th {
+            font-size: 11px;
+        }
+
+        .action-btn {
+            padding: 8px 16px;
+            font-size: 13px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .students-table {
+            font-size: 13px;
+        }
+
+        .students-table th:nth-child(3),
+        .students-table td:nth-child(3) {
+            display: none;
+        }
+    }
+</style>
+
+<div class="page-container">
+    <div class="content-wrapper">
+        <div class="page-header">
+            <h1 class="header-title">Select Student for Fees</h1>
+            <a href="{% url 'home' %}" class="back-btn">Back to Dashboard</a>
+        </div>
+
+        <div class="table-card">
+            {% if students %}
+            <div class="table-wrapper">
+                <table class="students-table">
+                    <thead>
+                        <tr>
+                            <th>Student Name</th>
+                            <th>Class</th>
+                            <th>Mobile Number</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for s in students %}
+                        <tr>
+                            <td class="student-name">{{ s.first_name }} {{ s.surname }}</td>
+                            <td>{{ s.student_class }}</td>
+                            <td>{{ s.mobile }}</td>
+                            <td>
+                                <a href="{% url 'add_fees' s.id %}">
+                                    <button class="action-btn">Add Fees</button>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">📚</div>
+                <div class="empty-title">No Students Found</div>
+                <div class="empty-text">Please add students first to manage their fees</div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

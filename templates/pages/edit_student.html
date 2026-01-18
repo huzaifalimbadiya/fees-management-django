@@ -1,0 +1,280 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    .page-container {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        padding: 40px 20px;
+    }
+
+    .form-wrapper {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .page-header {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 30px;
+        border-radius: 16px;
+        margin-bottom: 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .header-title {
+        color: #ffffff;
+        font-size: 28px;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .back-btn {
+        padding: 10px 24px;
+        background: rgba(255, 255, 255, 0.1);
+        color: #ffffff;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+
+    .back-btn:hover {
+        background: rgba(255, 255, 255, 0.15);
+        transform: translateY(-2px);
+    }
+
+    .form-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 40px;
+        border-radius: 16px;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 24px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-group.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .form-label {
+        color: #94a3b8;
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .form-label .required {
+        color: #ef4444;
+        margin-left: 4px;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 14px 16px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 8px;
+        color: #ffffff;
+        font-size: 15px;
+        transition: all 0.3s ease;
+        outline: none;
+    }
+
+    .form-input:focus {
+        background: rgba(255, 255, 255, 0.12);
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .form-input::placeholder {
+        color: #64748b;
+    }
+
+    textarea.form-input {
+        min-height: 120px;
+        resize: vertical;
+        font-family: inherit;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 32px;
+        justify-content: flex-end;
+    }
+
+    .btn {
+        padding: 14px 32px;
+        border: none;
+        border-radius: 8px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+    }
+
+    .btn-secondary {
+        background: rgba(255, 255, 255, 0.1);
+        color: #ffffff;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.15);
+    }
+
+    @media (max-width: 768px) {
+        .page-container {
+            padding: 20px 15px;
+        }
+
+        .page-header {
+            padding: 20px;
+            flex-direction: column;
+            gap: 16px;
+            align-items: flex-start;
+        }
+
+        .header-title {
+            font-size: 24px;
+        }
+
+        .back-btn {
+            width: 100%;
+            text-align: center;
+        }
+
+        .form-card {
+            padding: 24px;
+        }
+
+        .form-grid {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .form-actions {
+            flex-direction: column-reverse;
+        }
+
+        .btn {
+            width: 100%;
+        }
+    }
+</style>
+
+{% if error %}
+<div style="
+    background:#fee2e2;
+    color:#b91c1c;
+    padding:10px;
+    border-radius:8px;
+    margin-bottom:15px;
+    font-weight:600;
+">
+    ⚠ {{ error }}
+</div>
+{% endif %}
+
+<div class="page-container">
+    <div class="form-wrapper">
+        <div class="page-header">
+            <h1 class="header-title">Edit Student</h1>
+            <a href="{% url 'student_list' %}" class="back-btn">Back to List</a>
+        </div>
+
+        <div class="form-card">
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">First Name <span class="required">*</span></label>
+                        <input type="text" name="first_name" class="form-input"
+                               value="{{ old.first_name|default:student.first_name }}"
+                               placeholder="Enter first name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Surname <span class="required">*</span></label>
+                        <input type="text" name="surname" class="form-input"
+                               value="{{ old.surname|default:student.surname }}"
+                               placeholder="Enter surname" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Admission Number <span class="required">*</span></label>
+                        <input type="text" name="admission_no" class="form-input"
+                               value="{{ student.admission_no }}"
+                               readonly style="opacity: 0.6; cursor: not-allowed;">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Class <span class="required">*</span></label>
+                        <input type="text" name="student_class" class="form-input"
+                               value="{{ old.student_class|default:student.student_class }}"
+                               placeholder="Enter class" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Mobile Number <span class="required">*</span></label>
+                        <input type="tel" name="mobile" class="form-input"
+                               value="{{ old.mobile|default:student.mobile }}"
+                               pattern="[0-9]{10}" maxlength="10"
+                               placeholder="Enter 10 digit number" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Previous Institute</label>
+                        <input type="text" name="previous_institute" class="form-input"
+                               value="{{ old.previous_institute|default:student.previous_institute }}"
+                               placeholder="Enter previous institute (optional)">
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label class="form-label">Address</label>
+                        <textarea name="address" class="form-input"
+                                  placeholder="Enter complete address">{{ old.address|default:student.address }}</textarea>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <a href="{% url 'student_list' %}" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary">Update Student</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

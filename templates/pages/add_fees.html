@@ -1,0 +1,294 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    .page-container {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        padding: 40px 20px;
+    }
+
+    .fees-wrapper {
+        max-width: 700px;
+        margin: 0 auto;
+    }
+
+    .page-header {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 30px;
+        border-radius: 16px;
+        margin-bottom: 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .header-title {
+        color: #ffffff;
+        font-size: 28px;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .back-btn {
+        padding: 10px 24px;
+        background: rgba(255, 255, 255, 0.1);
+        color: #ffffff;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+
+    .back-btn:hover {
+        background: rgba(255, 255, 255, 0.15);
+        transform: translateY(-2px);
+    }
+
+    .student-info {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 24px;
+        border-radius: 16px;
+        margin-bottom: 24px;
+        text-align: center;
+    }
+
+    .student-label {
+        color: #94a3b8;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 8px;
+    }
+
+    .student-name {
+        color: #ffffff;
+        font-size: 24px;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .fees-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 40px;
+        border-radius: 16px;
+    }
+
+    .form-group {
+        margin-bottom: 24px;
+    }
+
+    .form-label {
+        color: #94a3b8;
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        display: block;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 14px 16px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 10px;
+        color: #ffffff;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        outline: none;
+        font-weight: 600;
+    }
+
+    .form-input:focus {
+        background: rgba(255, 255, 255, 0.12);
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .summary-card {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        padding: 24px;
+        border-radius: 12px;
+        margin-top: 24px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .summary-item {
+        text-align: center;
+    }
+
+    .summary-label {
+        color: #94a3b8;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 8px;
+    }
+
+    .summary-value {
+        color: #ffffff;
+        font-size: 28px;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .status-paid {
+        color: #10b981;
+    }
+
+    .status-pending {
+        color: #ef4444;
+    }
+
+    .status-partial {
+        color: #f59e0b;
+    }
+
+    .submit-btn {
+        width: 100%;
+        margin-top: 32px;
+        padding: 16px;
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+</style>
+
+<div class="page-container">
+    <div class="fees-wrapper">
+        <div class="page-header">
+            <h1 class="header-title">Manage Fees</h1>
+            <a href="{% url 'home' %}" class="back-btn">Back to Dashboard</a>
+        </div>
+
+        <div class="student-info">
+            <div class="student-label">Student Details</div>
+            <h2 class="student-name">{{ student.first_name }} {{ student.surname }}</h2>
+        </div>
+
+        <div class="fees-card">
+            <form method="post" id="feesForm">
+                {% csrf_token %}
+
+                {% if not fee %}
+                <div class="form-group">
+                    <label class="form-label">Total Fees Amount</label>
+                    <input id="total" name="total_fees" type="number" class="form-input" required>
+                </div>
+                {% else %}
+                <input id="total" type="hidden" value="{{ fee.total_fees }}">
+                <input id="oldRemaining" type="hidden" value="{{ fee.remaining_amount }}">
+                {% endif %}
+
+                <div class="form-group">
+                    <label class="form-label">Payment Amount</label>
+                    <input id="paid" name="paid_amount" type="number" class="form-input" required>
+                    <div id="payError" style="
+    display:none;
+    margin-top:10px;
+    background:#fee2e2;
+    color:#b91c1c;
+    padding:10px;
+    border-radius:8px;
+    font-weight:600;
+">
+                        Payment amount cannot be greater than remaining fees
+                    </div>
+
+                </div>
+
+                <div class="summary-card">
+                    <div class="summary-item">
+                        <div class="summary-label">Remaining Amount</div>
+                        <p class="summary-value">₹<span id="remaining">
+                                {% if fee %}{{ fee.remaining_amount }}{% else %}0{% endif %}
+                            </span></p>
+                    </div>
+
+                    <div class="summary-item">
+                        <div class="summary-label">Payment Status</div>
+                        <p class="summary-value" id="status">
+                            {% if fee %}{{ fee.status }}{% else %}Pending{% endif %}
+                        </p>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn">Save Payment</button>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+
+    function calculate() {
+        let p = parseInt(paid.value) || 0;
+        let r = 0;
+
+        if (oldRemainingInput) {
+            r = oldRemaining - p;
+        } else {
+            let t = parseInt(total.value) || 0;
+            r = t - p;
+        }
+
+        if (r < 0) {
+            document.getElementById("payError").style.display = "block";
+            remaining.innerText = 0;
+            status.innerText = "Invalid";
+            status.className = "summary-value status-pending";
+            return;
+        } else {
+            document.getElementById("payError").style.display = "none";
+        }
+
+        remaining.innerText = r;
+
+        status.className = "summary-value";
+        if (p === 0) {
+            status.innerText = "Pending";
+            status.classList.add("status-pending");
+        } else if (r === 0) {
+            status.innerText = "Paid";
+            status.classList.add("status-paid");
+        } else {
+            status.innerText = "Partial";
+            status.classList.add("status-partial");
+        }
+    }
+
+
+
+
+
+
+    document.getElementById("feesForm").addEventListener("submit", function (e) {
+        let r = parseInt(remaining.innerText);
+
+        if (r < 0) {
+            e.preventDefault();
+            document.getElementById("payError").style.display = "block";
+        }
+    });
+
+</script>
+
+{% endblock %}
