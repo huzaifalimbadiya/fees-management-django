@@ -1,13 +1,11 @@
-from django.apps import AppConfig
+def ready(self):
+    from .models import AdminUser
 
-class AppConfigCustom(AppConfig):
-    default_auto_field = 'django.db.models.BigAutoField'
-    name = 'app'
+    user, created = AdminUser.objects.get_or_create(
+        username="huzaifa",
+        defaults={"is_active": True}
+    )
 
-    def ready(self):
-        from .models import AdminUser
-
-        if not AdminUser.objects.filter(username="huzaifa").exists():
-            user = AdminUser(username="huzaifa", is_active=True)
-            user.set_password("Huzaifa")
-            user.save()
+    user.set_password("huzaifa")   # 🔥 hamesha password update hoga
+    user.is_active = True
+    user.save()
