@@ -238,35 +238,45 @@
     </div>
 </div>
 <script>
+    const total = document.getElementById("total");
+    const paid = document.getElementById("paid");
+    const remaining = document.getElementById("remaining");
+    const status = document.getElementById("status");
+    const payError = document.getElementById("payError");
+
+    const oldRemainingInput = document.getElementById("oldRemaining");
 
     function calculate() {
-        let p = parseInt(paid.value) || 0;
-        let r = 0;
+        let paidVal = parseInt(paid.value) || 0;
+        let remainingVal = 0;
 
         if (oldRemainingInput) {
-            r = oldRemaining - p;
+            let oldRemaining = parseInt(oldRemainingInput.value) || 0;
+            remainingVal = oldRemaining - paidVal;
         } else {
-            let t = parseInt(total.value) || 0;
-            r = t - p;
+            let totalVal = parseInt(total.value) || 0;
+            remainingVal = totalVal - paidVal;
         }
 
-        if (r < 0) {
-            document.getElementById("payError").style.display = "block";
+        // ❌ Overpayment block
+        if (remainingVal < 0) {
+            payError.style.display = "block";
             remaining.innerText = 0;
             status.innerText = "Invalid";
             status.className = "summary-value status-pending";
             return;
         } else {
-            document.getElementById("payError").style.display = "none";
+            payError.style.display = "none";
         }
 
-        remaining.innerText = r;
+        remaining.innerText = remainingVal;
 
         status.className = "summary-value";
-        if (p === 0) {
+
+        if (paidVal === 0) {
             status.innerText = "Pending";
             status.classList.add("status-pending");
-        } else if (r === 0) {
+        } else if (remainingVal === 0) {
             status.innerText = "Paid";
             status.classList.add("status-paid");
         } else {
@@ -275,20 +285,17 @@
         }
     }
 
-
-
-
-
+    // 🔥 live calculation while typing
+    paid.addEventListener("input", calculate);
+    if (total) total.addEventListener("input", calculate);
 
     document.getElementById("feesForm").addEventListener("submit", function (e) {
         let r = parseInt(remaining.innerText);
-
         if (r < 0) {
             e.preventDefault();
-            document.getElementById("payError").style.display = "block";
+            payError.style.display = "block";
         }
     });
-
 </script>
 
 {% endblock %}
