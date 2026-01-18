@@ -10,7 +10,7 @@ class AppConfigCustom(AppConfig):
 
         if not AdminUser.objects.filter(username="admin").exists():
             AdminUser.objects.create(
-                username="admin",
-                password="12345",
+                username="huzaifa",
+                password="91Huzaifa",
                 is_active=True
             )
