@@ -55,3 +55,23 @@ class Fees(models.Model):
 
 
 
+
+
+# new user and pasword
+from django.apps import AppConfig
+
+class AppConfigCustom(AppConfig):
+    default_auto_field = 'django.db.models.BigAutoField'
+    name = 'app'
+
+    def ready(self):
+        from django.contrib.auth.models import User
+        import os
+
+        username = os.environ.get("DJANGO_ADMIN_USER", "admin")
+        password = os.environ.get("DJANGO_ADMIN_PASS", "admin12345")
+        email = os.environ.get("DJANGO_ADMIN_EMAIL", "admin@example.com")
+
+        if not User.objects.filter(username=username).exists():
+            User.objects.create_superuser(username, email, password)
+            print("✅ Superuser created automatically")
