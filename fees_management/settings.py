@@ -87,7 +87,6 @@ DATABASES = {
         "NAME": "fees_db",        # postgres me jo DB banaya
         "USER": "postgres",       # mostly postgres hota hai
         "PASSWORD": "your_password",
-        "HOST": "localhost",
         "PORT": "5432",
     }
 }
